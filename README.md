@@ -30,7 +30,7 @@
 
 2. **Clone this repository:**
    ```bash
-   git clone https://github.com/yourusername/Standard_trigger_words_loader.git
+   git clone https://github.com/revisionhiep-create/comfyui-standard-trigger-words.git Standard_trigger_words_loader
    ```
 
 3. **Restart ComfyUI**
@@ -400,8 +400,8 @@ Free for personal and commercial use.
 
 ## 📞 Support & Links
 
-- **Issues:** [Report bugs or request features](https://github.com/yourusername/Standard_trigger_words_loader/issues)
-- **Discussions:** [Ask questions and share workflows](https://github.com/yourusername/Standard_trigger_words_loader/discussions)
+- **Issues:** [Report bugs or request features](https://github.com/revisionhiep-create/comfyui-standard-trigger-words/issues)
+- **Discussions:** [Ask questions and share workflows](https://github.com/revisionhiep-create/comfyui-standard-trigger-words/discussions)
 - **ComfyUI:** [Main Repository](https://github.com/comfyanonymous/ComfyUI)
 
 ---
