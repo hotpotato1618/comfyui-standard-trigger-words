@@ -433,6 +433,11 @@ app.registerExtension({
                     node.setDirtyCanvas(true, false);
                 });
 
+                // Set default node size on first creation
+                if (!node.size || node.size[0] < 400) {
+                    node.setSize([750, 550]);
+                }
+
                 return result;
             };
         }
