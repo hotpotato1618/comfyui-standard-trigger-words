@@ -1,0 +1,31 @@
+[project]
+name = "standard-trigger-words-loader"
+version = "1.0.0"
+description = "ComfyUI custom node for managing trigger words with 50+ editable presets optimized for SDXL Illustrious"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["comfyui", "trigger-words", "sdxl", "illustrious", "custom-node"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/Standard_trigger_words_loader"
+Repository = "https://github.com/yourusername/Standard_trigger_words_loader"
+Issues = "https://github.com/yourusername/Standard_trigger_words_loader/issues"
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
