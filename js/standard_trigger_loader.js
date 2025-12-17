@@ -318,8 +318,20 @@ function createTagsWidget(node, name, opts = {}) {
         }
     });
 
-    // Initial render after DOM widget is added
-    renderTags(widget._value);
+    // Initial render after DOM widget is added - with error handling
+    try {
+        renderTags(widget._value);
+        // Force canvas redraw to ensure buttons appear
+        setTimeout(() => {
+            if (node && node.setDirtyCanvas) {
+                node.setDirtyCanvas(true, true);
+            }
+        }, 100);
+    } catch (e) {
+        console.error("Failed to render initial tags:", e);
+        widget._value = [];
+        renderTags([]);
+    }
 
     return widget;
 }
@@ -387,6 +399,9 @@ app.registerExtension({
                     };
                 }
 
+                // Store node reference in tagsWidget for forced redraws
+                tagsWidget._node = node;
+                
                 // Load presets when category changes
                 if (categoryWidget) {
                     const originalCallback = categoryWidget.callback;
@@ -404,9 +419,15 @@ app.registerExtension({
                     if (modifyTagsWidget.value && modifyTagsWidget.value !== "") {
                         try {
                             const savedTags = JSON.parse(modifyTagsWidget.value);
-                            tagsWidget.value = savedTags;
+                            if (Array.isArray(savedTags) && savedTags.length > 0) {
+                                tagsWidget.value = savedTags;
+                                // Force redraw after loading saved data
+                                setTimeout(() => node.setDirtyCanvas(true, true), 50);
+                            } else {
+                                throw new Error("Invalid saved tags format");
+                            }
                         } catch (e) {
-                            console.error("Failed to parse saved tags:", e);
+                            console.error("Failed to parse saved tags:", e, "Value:", modifyTagsWidget.value);
                             // Load default preset
                             const initialCategory = categoryWidget.value || "Quality";
                             const initialDefaultActive = defaultActiveWidget?.value ?? true;
@@ -446,7 +467,24 @@ app.registerExtension({
 
 // Helper to load presets
 function loadPresetForCategory(category, defaultActive, tagsWidget) {
-    const tags = getPresetTags(category, defaultActive, 1.0);
-    console.log(`Loading preset ${category} with ${tags.length} tags`);
-    tagsWidget.value = tags;
+    try {
+        const tags = getPresetTags(category, defaultActive, 1.0);
+        console.log(`Loading preset ${category} with ${tags.length} tags`);
+        
+        if (!tags || tags.length === 0) {
+            console.warn("No tags loaded for category:", category);
+            tagsWidget.value = [];
+            return;
+        }
+        
+        tagsWidget.value = tags;
+        
+        // Force canvas redraw after loading to ensure buttons appear
+        if (tagsWidget._node && tagsWidget._node.setDirtyCanvas) {
+            tagsWidget._node.setDirtyCanvas(true, true);
+        }
+    } catch (e) {
+        console.error("Failed to load preset:", e);
+        tagsWidget.value = [];
+    }
 }
