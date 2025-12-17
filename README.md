@@ -21,7 +21,13 @@
 
 ## 📦 Installation
 
-### Method 1: Git Clone (Recommended)
+### Method 1: Via ComfyUI Manager (Recommended)
+1. Open ComfyUI Manager
+2. Search for "standard trigger words"
+3. Click Install
+4. Restart ComfyUI
+
+### Method 2: Git Clone (Recommended)
 
 1. **Navigate to ComfyUI custom nodes folder:**
    ```bash
@@ -35,7 +41,7 @@
 
 3. **Restart ComfyUI**
 
-### Method 2: Manual Download
+### Method 3: Manual Download
 
 1. **Download ZIP** from GitHub (green "Code" button → Download ZIP)
 
