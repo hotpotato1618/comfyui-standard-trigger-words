@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-standard-trigger-words"
 description = "Fixed redraw problem at startup, added 4 layers of protection"
-version = "1.0.1"
+version = "1.0.2"
 license = {text = "MIT"}
 dependencies = []
 
