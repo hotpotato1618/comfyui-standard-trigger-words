@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-standard-trigger-words"
-description = "Interactive button-based trigger word node with 80+ SDXL/Illustrious presets. Click to toggle, right-click to edit, scroll to adjust strength."
-version = "1.0.1"
+description = "Rare startup button bug fix for the js file"
+version = "1.0.2"
 license = {text = "MIT"}
 dependencies = []
 
