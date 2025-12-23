@@ -45,6 +45,8 @@
    ```
 3. **Restart ComfyUI**
 
+![Project screenshot](.infograph.png)
+
 ---
 
 ## 🚀 Quick Start
