@@ -1,5 +1,14 @@
 # Standard Trigger Words Loader - Change Log
 
+## [2.1.0] - 2025-12-22
+
+### Added
+- **Dynamic Category Management**: Users can now create custom tag categories directly from the "☰ Categories" menu.
+- **Category Deletion**: Custom categories can be removed via a "×" button in the categories menu, which also cleans up all associated tags and state.
+- **Persisted Custom Structure**: Custom categories are saved into the node's state, ensuring they persist across workflow reloads.
+- **Automatic Color Coding**: Custom categories starting with "Pos:" or "Neg:" automatically inherit green/red styling in the menu.
+- **Improved Menu UX**: Added a "New Category..." input field at the bottom of the categories menu with auto-focus for rapid organization.
+
 ## [2.0.0] - 2025-12-22
 
 ### Added

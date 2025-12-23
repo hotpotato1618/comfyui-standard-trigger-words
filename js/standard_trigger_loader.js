@@ -137,7 +137,11 @@ function createTagsWidget(node, name, opts = {}) {
     const widget = {
         type: "custom_tags",
         name: name,
-        _value: { tags: [], activeCategories: ["Pos: Quality", "Pos: Composition"] },
+        _value: { 
+            tags: [], 
+            activeCategories: ["Pos: Quality", "Pos: Composition"],
+            customCategories: [] 
+        },
         draw: function(ctx, node, widgetWidth, y, widgetHeight) {},
         computeSize: function(width) { return [width, Math.max(400, node.size[1] - 150)]; },
         serializeValue: function() { return JSON.stringify(this.value); },
@@ -167,17 +171,50 @@ function createTagsWidget(node, name, opts = {}) {
         Object.assign(menu.style, {
             position: "fixed", top: `${rect.bottom + 5}px`, left: `${rect.left}px`,
             backgroundColor: "#2c2c2e", border: "1px solid #3a3a3c", borderRadius: "8px",
-            boxShadow: "0 8px 16px rgba(0,0,0,0.4)", zIndex: "1000", padding: "6px", minWidth: "160px"
+            boxShadow: "0 8px 16px rgba(0,0,0,0.4)", zIndex: "1000", padding: "6px", minWidth: "180px"
         });
 
-        ALL_CATEGORY_NAMES.forEach(cat => {
+        const allCategories = [...Object.keys(TRIGGER_WORD_PRESETS), ...(widget.value.customCategories || [])];
+
+        allCategories.forEach(cat => {
             const item = document.createElement("div");
             const isActive = widget.value.activeCategories.includes(cat);
-            item.innerHTML = `<span style="width:16px;display:inline-block">${isActive ? "✓" : ""}</span> ${cat}`;
+            const isCustom = (widget.value.customCategories || []).includes(cat);
+            
             Object.assign(item.style, {
+                display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "8px 10px", cursor: "pointer", borderRadius: "4px", fontSize: "12px",
                 color: cat.startsWith("Neg") ? "#ff453a" : (cat.startsWith("Pos") ? "#30d158" : "#ffffff")
             });
+
+            const labelArea = document.createElement("div");
+            labelArea.style.display = "flex";
+            labelArea.style.alignItems = "center";
+            labelArea.innerHTML = `<span style="width:16px;display:inline-block">${isActive ? "✓" : ""}</span> ${cat}`;
+            labelArea.style.flexGrow = "1";
+
+            item.appendChild(labelArea);
+
+            if (isCustom) {
+                const delCatBtn = document.createElement("div");
+                delCatBtn.innerHTML = "×";
+                Object.assign(delCatBtn.style, {
+                    color: "#ff453a", marginLeft: "10px", padding: "0 4px", fontWeight: "bold", opacity: "0.5"
+                });
+                delCatBtn.onmouseover = () => delCatBtn.style.opacity = "1";
+                delCatBtn.onmouseout = () => delCatBtn.style.opacity = "0.5";
+                delCatBtn.onclick = (ev) => {
+                    ev.stopPropagation();
+                    const newValue = { ...widget.value };
+                    newValue.customCategories = newValue.customCategories.filter(c => c !== cat);
+                    newValue.activeCategories = newValue.activeCategories.filter(c => c !== cat);
+                    newValue.tags = newValue.tags.filter(t => t.category !== cat);
+                    widget.value = newValue;
+                    if (document.body.contains(menu)) document.body.removeChild(menu);
+                };
+                item.appendChild(delCatBtn);
+            }
+
             item.onmouseover = () => item.style.backgroundColor = "rgba(255,255,255,0.05)";
             item.onmouseout = () => item.style.backgroundColor = "transparent";
             item.onclick = (ev) => {
@@ -187,9 +224,9 @@ function createTagsWidget(node, name, opts = {}) {
                     newValue.activeCategories = newValue.activeCategories.filter(c => c !== cat);
                 } else {
                     newValue.activeCategories.push(cat);
+                    // Add presets if available and not already present
                     (TRIGGER_WORD_PRESETS[cat] || []).forEach(text => {
                         if (!newValue.tags.find(t => t.text === text && t.category === cat)) {
-                            // Default all new words to OFF
                             newValue.tags.push({ text, active: false, strength: 1.0, category: cat });
                         }
                     });
@@ -200,8 +237,52 @@ function createTagsWidget(node, name, opts = {}) {
             menu.appendChild(item);
         });
 
+        // Add New Category Input
+        const divider = document.createElement("div");
+        Object.assign(divider.style, { height: "1px", backgroundColor: "#3a3a3c", margin: "6px 4px" });
+        menu.appendChild(divider);
+
+        const addCatContainer = document.createElement("div");
+        Object.assign(addCatContainer.style, { display: "flex", gap: "4px", padding: "4px" });
+        
+        const addCatInput = document.createElement("input");
+        addCatInput.placeholder = "New Category...";
+        Object.assign(addCatInput.style, {
+            backgroundColor: "#1c1c1e", border: "1px solid #3a3a3c", color: "white",
+            borderRadius: "4px", padding: "4px 8px", fontSize: "11px", flexGrow: "1", outline: "none"
+        });
+        
+        const addCatBtn = document.createElement("button");
+        addCatBtn.innerHTML = "+";
+        Object.assign(addCatBtn.style, {
+            backgroundColor: "#3a3a3c", border: "none", color: "white", borderRadius: "4px",
+            padding: "2px 8px", cursor: "pointer", fontSize: "14px"
+        });
+
+        const performAddCat = () => {
+            const name = addCatInput.value.trim();
+            if (name && !allCategories.includes(name)) {
+                const newValue = { ...widget.value };
+                newValue.customCategories = [...(newValue.customCategories || []), name];
+                newValue.activeCategories.push(name);
+                widget.value = newValue;
+                if (document.body.contains(menu)) document.body.removeChild(menu);
+            }
+        };
+
+        addCatBtn.onclick = (ev) => { ev.stopPropagation(); performAddCat(); };
+        addCatInput.onkeydown = (ev) => { if (ev.key === "Enter") { ev.stopPropagation(); performAddCat(); } };
+        addCatInput.onclick = (ev) => ev.stopPropagation();
+
+        addCatContainer.appendChild(addCatInput);
+        addCatContainer.appendChild(addCatBtn);
+        menu.appendChild(addCatContainer);
+
         const closeMenu = (ev) => { if (document.body.contains(menu) && !menu.contains(ev.target)) { document.body.removeChild(menu); window.removeEventListener("click", closeMenu); } };
-        setTimeout(() => window.addEventListener("click", closeMenu), 0);
+        setTimeout(() => {
+            window.addEventListener("click", closeMenu);
+            addCatInput.focus();
+        }, 0);
         document.body.appendChild(menu);
     };
 
@@ -426,7 +507,11 @@ app.registerExtension({
                             initialTags.push({ text, active: false, strength: 1.0, category: cat });
                         });
                     });
-                    tagsWidget.value = { tags: initialTags, activeCategories: ["Pos: Quality", "Pos: Composition"] };
+                    tagsWidget.value = { 
+                        tags: initialTags, 
+                        activeCategories: ["Pos: Quality", "Pos: Composition"],
+                        customCategories: [] 
+                    };
                 }
 
                 node.setSize([750, 700]);

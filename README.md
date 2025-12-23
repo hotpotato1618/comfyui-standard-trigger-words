@@ -4,13 +4,15 @@
 
 
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Custom%20Node-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 ## 🌟 Features (V2 Overhaul)
 
 - **New Two-Column UI** - Inspired by EreNodes, providing a clean and organized layout.
+- **Dynamic Category Creation** - Add your own custom categories directly from the "☰ Categories" menu.
+- **Category Management** - Delete custom categories and all their associated tags with a single click.
 - **120+ Preset Trigger Words** - Comprehensive collection for modern image generation models.
 - **13 Categories** - Quality, Lighting, Composition, Poses, Expressions, Style, Detail, Aesthetic, Motion, and specialized Negative categories.
 - **Multi-Category Selection** - View and manage tags from multiple categories simultaneously.
@@ -69,6 +71,12 @@
 ---
 
 ## 🔄 Changelog
+
+### v2.1.0 (December 2024)
+- 📁 **Dynamic Categories**: Added the ability to create and delete custom tag categories.
+- 🧹 **State Cleanup**: Deleting a category now automatically removes all associated tags from the prompt output.
+- 💾 **Persistence**: Custom categories are now saved in the workflow state.
+- 🎨 **Color Coding**: New categories automatically follow Green/Red color schemes based on "Pos:" or "Neg:" prefixes.
 
 ### v2.0.0 (December 2024)
 - 🎨 **Complete UI Redesign**: Switched to a modern two-column grid layout.

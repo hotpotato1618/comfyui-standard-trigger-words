@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-standard-trigger-words"
-description = "Interactive trigger word manager with two-column UI and robust sync"
-version = "2.0.0"
+description = "Added remove and edit category in the UI"
+version = "2.1.0"
 license = {text = "MIT"}
 dependencies = []
 
