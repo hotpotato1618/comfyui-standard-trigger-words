@@ -11,4 +11,4 @@ Repository = "https://github.com/revisionhiep-create/comfyui-standard-trigger-wo
 [tool.comfy]
 PublisherId = "revybevy"
 DisplayName = "Standard Trigger Words 📝"
-Icon = ""
+Icon = "https://github.com/revisionhiep-create/comfyui-standard-trigger-words/blob/main/Infograph.png"
