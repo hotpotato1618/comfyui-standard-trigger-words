@@ -105,8 +105,17 @@ function createTagsWidget(node, name, opts = {}) {
 
     menuBtn.onclick = (e) => {
         e.stopPropagation();
+        
+        // If menu already exists, close it and return
+        const existingMenu = document.getElementById("standard-trigger-category-menu");
+        if (existingMenu) {
+            document.body.removeChild(existingMenu);
+            return;
+        }
+
         const rect = menuBtn.getBoundingClientRect();
         const menu = document.createElement("div");
+        menu.id = "standard-trigger-category-menu";
         Object.assign(menu.style, {
             position: "fixed", top: `${rect.bottom + 5}px`, left: `${rect.left}px`,
             backgroundColor: "#2c2c2e", border: "1px solid #3a3a3c", borderRadius: "8px",
