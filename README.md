@@ -1,103 +1,63 @@
 # Standard Trigger Words Loader 📝
 
-**Interactive, two-column trigger word manager for SDXL Illustrious/Pony models in ComfyUI**
+An interactive, professional-grade trigger word management node for ComfyUI. Optimized for SDXL, Illustrious, and Pony models, this node provides a high-performance button-based interface to build complex prompts with precision and speed.
 
+## 🌟 Comprehensive Feature Set
 
-
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
-![ComfyUI](https://img.shields.io/badge/ComfyUI-Custom%20Node-green)
-![License](https://img.shields.io/badge/license-MIT-orange)
-
-## 🌟 Features (V2 Overhaul)
-
-- **New Two-Column UI** - Inspired by EreNodes, providing a clean and organized layout.
-- **Dynamic Category Creation** - Add your own custom categories directly from the "☰ Categories" menu.
-- **Category Management** - Delete custom categories and all their associated tags with a single click.
-- **120+ Preset Trigger Words** - Comprehensive collection for modern image generation models.
-- **13 Categories** - Quality, Lighting, Composition, Poses, Expressions, Style, Detail, Aesthetic, Motion, and specialized Negative categories.
-- **Multi-Category Selection** - View and manage tags from multiple categories simultaneously.
-- **Default OFF State** - All tags start disabled, letting you build your prompt precisely.
-- **Responsive Layout** - UI automatically expands to fill the node space when resized.
-- **Inline Tag Management** - Add tags instantly within any category, double-click to edit, and "×" to remove.
-- **Nuclear Scrubbing** - Advanced prompt cleaning ensures no technical metadata leaks into your images.
-- **Robust Workflow Sync** - Remembers your category selections and tag states across sessions.
-- **Works with [Lora Manager](https://github.com/willmiao/ComfyUI-Lora-Manager)** - Integrates seamlessly with existing workflows.
-- **Works with Text Concatenate Node, example workflow in repo.
-
----
+- **Interactive Button UI**: Toggle trigger words on/off with a single click using a modern, two-column grid layout inspired by high-end workflow nodes.
+- **Precision Strength Control**: 
+    - **Master STR Toggle**: Enable/disable weighted prompt generation globally (Muted professional grey theme).
+    - **Inline Precision Sliders**: Adjust individual tag weights from 0.0 to 2.0 with real-time feedback.
+    - **Manual Numeric Entry**: Click any strength value to type a precise number directly for ultimate control.
+    - **Mouse Wheel Integration**: Hover and scroll to adjust weights instantly when Strength Mode is active.
+- **Dynamic Responsive Layout**: The tag grid automatically adapts its columns based on the node's width, scaling from a compact two-column view to a wide multi-column layout.
+- **Single Source of Truth (SSoT)**: Centralized preset management in Python. Update your library in `standard_trigger_presets.py` and the UI builds itself dynamically on load.
+- **Portable JSON Collections**:
+    - **📥 Import**: Seamlessly load custom category collections from portable JSON files.
+    - **📤 Export**: Backup your custom tag setups or share them with the community.
+- **Advanced State Sync**:
+    - **Zero-Latency Interaction**: Pure event-driven synchronization eliminates UI "snap-back" and ensure data integrity.
+    - **Robust Workflow Persistence**: Automatically remembers active categories, tag states, and custom weights across workflow reloads.
+    - **Bootstrap Loading**: High-speed initial load extracts library data during the extension registration phase.
+- **Nuclear Scrubbing**: Built-in safety filters and regex-based cleaning prevent internal metadata, technical JSON, or "funky text" from leaking into your final prompt.
+- **Smart UI Logic**:
+    - **Auto-Baseline Reset**: Strength values automatically return to 1.0 when a tag is deactivated or during a master reset.
+    - **Dynamic Category Management**: Create, rename, and delete custom categories directly within the UI.
+    - **Automatic Color Coding**: Categories starting with "Pos:" or "Neg:" automatically inherit Green/Red visual styles.
+    - **Batch Operations**: Quick master **ON** and **OFF** buttons for rapid experimentation.
+- **Curated Preset Library**:
+    - **120+ Curated Tags**: Pre-loaded with high-quality trigger words for modern image generation.
+    - **13+ Default Categories**: Quality, Lighting, Composition, Poses, Expressions, Style, Detail, Aesthetic, Motion, and specialized Negative (Anatomy, Technical, etc.) groups.
+- **Universal Compatibility**:
+    - **Lora Manager Ready**: Works out-of-the-box with [Lora Manager](https://github.com/willmiao/ComfyUI-Lora-Manager) and standard Lora Loaders.
+    - **Text Node Integration**: Compatible with Text Concatenate and other standard string manipulation nodes.
+    - **Auto-Deduplication**: Ensures your final prompt is clean and free of redundant tags.
 
 ## 📦 Installation
 
 ### Method 1: Via ComfyUI Manager (Recommended)
-1. Open ComfyUI Manager
-2. Search for "standard trigger words"
-3. Click Install
-4. Restart ComfyUI
+1. Open **ComfyUI Manager**.
+2. Search for `standard trigger words`.
+3. Click **Install** and restart ComfyUI.
 
 ### Method 2: Git Clone
-1. **Navigate to ComfyUI custom nodes folder:**
-   ```bash
-   cd ComfyUI/custom_nodes/
-   ```
-2. **Clone this repository:**
+1. Navigate to your `ComfyUI/custom_nodes/` directory.
+2. Run:
    ```bash
    git clone https://github.com/revisionhiep-create/comfyui-standard-trigger-words.git
    ```
-3. **Restart ComfyUI**
+3. Restart ComfyUI.
 
-![Project screenshot](Infograph.png)
+## 🚀 Usage Guide
 
----
-
-## 🚀 Quick Start
-
-1. **Add the node**: Search for `Standard Trigger Words 📝`.
-2. **Select Categories**: Click the **☰ Categories** button to open the multi-select menu.
-3. **Toggle Tags**: Click the switches to enable/disable tags (Green/Red = Active, Gray = Inactive).
-4. **Add/Edit**: 
-   - Type in the "Add..." box within a category and hit `+`.
-   - Double-click any tag text to edit it.
-   - Click the red `×` to delete a tag.
-5. **Adjust Strength**: Scroll your mouse wheel over any tag to adjust its prompt weight.
+1. **Initialize**: Search for `Standard Trigger Words 📝` in the node menu.
+2. **Library Setup**: Click **☰ Categories** to select which groups you want to see.
+3. **Prompt Building**: Click tags to activate them. Active tags turn Green (Positive) or Red (Negative).
+4. **Fine-Tuning**: 
+   - Click **STR** to show sliders. 
+   - Adjust weights using sliders or your mouse wheel.
+   - Click the numeric label to type a value manually.
+5. **Customization**: Use the `+` buttons to add custom tags or the "New Category" input to organize your own library.
 
 ---
-
-## ⚙️ Node Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| **default_active** | Boolean | Controls if newly added tags start enabled or disabled (Default: False). |
-| **prefix** | String | A custom string (like "masterpiece,") to always prepend to the output. |
-| **lora_syntax** | String | Connect `loaded_loras` from Lora Loader for `<lora:name:1.0>` syntax. |
-
----
-
-## 🔄 Changelog
-
-### v2.1.0 (December 2024)
-- 📁 **Dynamic Categories**: Added the ability to create and delete custom tag categories.
-- 🧹 **State Cleanup**: Deleting a category now automatically removes all associated tags from the prompt output.
-- 💾 **Persistence**: Custom categories are now saved in the workflow state.
-- 🎨 **Color Coding**: New categories automatically follow Green/Red color schemes based on "Pos:" or "Neg:" prefixes.
-
-### v2.0.0 (December 2024)
-- 🎨 **Complete UI Redesign**: Switched to a modern two-column grid layout.
-- 📂 **Multi-Category Support**: New menu allows selecting multiple active groups at once.
-- 🧘 **New Presets**: Added high-quality Poses and Expressions categories.
-- 🚫 **Negative Categories**: Dedicated sections for Negative Quality, Anatomy, Technical, and Style.
-- 🛠️ **Inline Editing**: Added direct text editing (double-click) and deletion (x button).
-- 🧼 **Nuclear Scrubbing**: Implemented regex-based prompt cleaning to prevent JSON leaks in images.
-- 🔄 **State Persistence**: Improved serialization to remember category selections in workflows.
-- 📏 **Responsive UI**: Fixed stretching issues to ensure tags use the full node width.
-
-### v1.0.0
-- ✨ Initial release with basic button tag interface.
-
----
-
-**Made with ❤️ for the ComfyUI community**
-
-**⭐ If this node helps your workflow, please star the repository!**
-
-### Advanced Usage (With [Lora Manager](https://github.com/willmiao/ComfyUI-Lora-Manager))
-
+*Created for the ComfyUI community by Revisionhiep. Distributed under the MIT License.*

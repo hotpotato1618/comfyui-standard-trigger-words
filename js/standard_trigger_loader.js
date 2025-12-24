@@ -4,77 +4,8 @@
 
 import { app } from "../../scripts/app.js";
 
-// Embedded Presets
-const TRIGGER_WORD_PRESETS = {
-    "Pos: Quality": [
-        "masterpiece", "best quality", "very aesthetic", "absurdres", "high quality",
-        "ultra high definition", "extremely high detail", "newest", "year 2024",
-        "year 2025", "highres", "8K", "HDR", "score_9", "score_8_up", "score_7_up"
-    ],
-    "Pos: Lighting": [
-        "volumetric lighting", "ambient occlusion", "dramatic lighting", "cinematic lighting",
-        "rim light", "soft lighting", "studio lighting", "golden hour lighting",
-        "natural lighting", "sunlight", "backlighting", "sharp focus", "glowing",
-        "luminescent background", "bioluminescence", "ray tracing", "reflection"
-    ],
-    "Pos: Composition": [
-        "dynamic angle", "dynamic pose", "low-angle shot", "low angle", "looking at viewer",
-        "from above", "from below", "upper body focus", "full body", "portrait",
-        "close-up shot", "mid shot", "cowboy shot", "wide angle", "cinematic field of view",
-        "perfect composition", "rule of thirds", "symmetrical", "asymmetrical", "bird's eye view"
-    ],
-    "Pos: Poses": [
-        "standing", "sitting", "lying", "squatting", "kneeling", "dynamic pose",
-        "fighting stance", "crossed arms", "hand on hip", "peace sign", "holding object",
-        "hands behind back", "stretching", "leaning", "jumping", "running", "crouching"
-    ],
-    "Pos: Expressions": [
-        "smile", "grin", "laughing", "angry", "sad", "crying", "surprised", "neutral",
-        "seductive", "wink", "tongue out", "blush", "pout", "closed eyes", "looking away",
-        "smirk", "embarrassed", "frown", "scared"
-    ],
-    "Pos: Style": [
-        "anime illustration", "semi-realistic anime illustration", "digital painting",
-        "cel shading", "clean linework", "manga style lineart", "detailed",
-        "highly detailed", "intricate details", "painterly", "flat color",
-        "vibrant colors", "muted colors", "watercolor", "sketchy"
-    ],
-    "Pos: Detail": [
-        "detailed eyes", "beautiful eye details", "detailed skin features", "detailed face features",
-        "detailed hair features", "expressive eyes", "intricate iris", "detailed clothing",
-        "detailed background", "fine texture details", "floating hair", "flowing hair",
-        "textured", "highly detailed background"
-    ],
-    "Pos: Aesthetic": [
-        "beautiful", "amazing", "stunning", "gorgeous", "perfect", "flawless",
-        "eye-catching", "stylish", "elegant", "aesthetic", "vivid colors",
-        "bright colors", "vibrant", "high contrast", "extreme contrast"
-    ],
-    "Pos: Motion": [
-        "dynamic movement", "motion lines", "foreshortening", "wind", "floating",
-        "flowing", "action pose", "speed lines"
-    ],
-    "Neg: Quality": [
-        "worst quality", "low quality", "normal quality", "jpeg artifacts", "lowres",
-        "blurry", "pixelated", "distorted", "low resolution"
-    ],
-    "Neg: Anatomy": [
-        "bad anatomy", "bad hands", "missing fingers", "extra digit", "fewer digits",
-        "extra limbs", "extra arms", "extra legs", "malformed limbs", "mutated hands",
-        "mutated", "mutilated", "disfigured", "long neck", "gross proportions",
-        "fused fingers", "too many fingers"
-    ],
-    "Neg: Technical": [
-        "watermark", "signature", "text", "error", "username", "cropped",
-        "out of frame", "border", "caption", "copyright"
-    ],
-    "Neg: Style": [
-        "sketch", "monochrome", "grayscale", "ugly", "duplicate", "morbid",
-        "mutation", "deformed", "censored", "unbalanced colors"
-    ]
-};
-
-const ALL_CATEGORY_NAMES = Object.keys(TRIGGER_WORD_PRESETS);
+// Global presets, initially empty, will be populated from Python
+let TRIGGER_WORD_PRESETS = {};
 
 function getWheelSensitivity() {
     return parseFloat(app.ui.settings.getSettingValue("AegisFlow.WheelScrollSpeed", 0.02)) || 0.02;
@@ -86,21 +17,21 @@ function createTagsWidget(node, name, opts = {}) {
     
     Object.assign(mainContainer.style, {
         display: "flex", flexDirection: "column", gap: "10px", padding: "10px",
-        backgroundColor: "#1c1c1e", borderRadius: "10px", width: "100%",
-        boxSizing: "border-box", border: "1px solid #3a3a3c", color: "#ffffff",
+        backgroundColor: "#0a0a0c", borderRadius: "10px", width: "100%",
+        boxSizing: "border-box", border: "1px solid #2a2a2c", color: "#ffffff",
         flexGrow: "1"
     });
 
     const header = document.createElement("div");
     Object.assign(header.style, {
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        paddingBottom: "8px", borderBottom: "1px solid #3a3a3c", width: "100%"
+        paddingBottom: "8px", borderBottom: "1px solid #2a2a2c", width: "100%"
     });
 
     const menuBtn = document.createElement("button");
-    menuBtn.innerHTML = "☰ Categories";
+    menuBtn.textContent = "☰ Categories";
     Object.assign(menuBtn.style, {
-        backgroundColor: "#3a3a3c", border: "none", color: "white", borderRadius: "6px", padding: "6px 10px", cursor: "pointer", fontSize: "12px", fontWeight: "bold"
+        backgroundColor: "#252527", border: "none", color: "white", borderRadius: "6px", padding: "6px 10px", cursor: "pointer", fontSize: "12px", fontWeight: "bold"
     });
 
     const title = document.createElement("div");
@@ -115,12 +46,16 @@ function createTagsWidget(node, name, opts = {}) {
     allOnBtn.textContent = "ON";
     const allOffBtn = document.createElement("button");
     allOffBtn.textContent = "OFF";
-    [allOnBtn, allOffBtn].forEach(btn => {
+    const strModeBtn = document.createElement("button");
+    strModeBtn.textContent = "STR";
+    
+    [allOnBtn, allOffBtn, strModeBtn].forEach(btn => {
         Object.assign(btn.style, {
-            backgroundColor: "#3a3a3c", border: "none", color: "white", borderRadius: "4px", padding: "4px 8px", fontSize: "10px", cursor: "pointer"
+            backgroundColor: "#252527", border: "none", color: "white", borderRadius: "4px", padding: "4px 8px", fontSize: "10px", cursor: "pointer"
         });
     });
 
+    batchControls.appendChild(strModeBtn);
     batchControls.appendChild(allOnBtn);
     batchControls.appendChild(allOffBtn);
     header.appendChild(menuBtn);
@@ -140,7 +75,8 @@ function createTagsWidget(node, name, opts = {}) {
         _value: { 
             tags: [], 
             activeCategories: ["Pos: Quality", "Pos: Composition"],
-            customCategories: [] 
+            customCategories: [],
+            strengthEnabled: false
         },
         draw: function(ctx, node, widgetWidth, y, widgetHeight) {},
         computeSize: function(width) { return [width, Math.max(400, node.size[1] - 150)]; },
@@ -156,9 +92,12 @@ function createTagsWidget(node, name, opts = {}) {
             const modWidget = node.widgets.find(w => w.name === "modify_tags");
             if (modWidget) {
                 const json = JSON.stringify(this._value);
+                // Prevent infinite loop by checking if value actually changed
                 if (modWidget.value !== json) {
+                    modWidget._setting_internally = true;
                     modWidget.value = json;
                     if (modWidget.callback) modWidget.callback(json);
+                    delete modWidget._setting_internally;
                 }
             }
         }
@@ -190,14 +129,20 @@ function createTagsWidget(node, name, opts = {}) {
             const labelArea = document.createElement("div");
             labelArea.style.display = "flex";
             labelArea.style.alignItems = "center";
-            labelArea.innerHTML = `<span style="width:16px;display:inline-block">${isActive ? "✓" : ""}</span> ${cat}`;
             labelArea.style.flexGrow = "1";
+            
+            const checkSpan = document.createElement("span");
+            Object.assign(checkSpan.style, { width: "16px", display: "inline-block" });
+            checkSpan.textContent = isActive ? "✓" : "";
+            
+            labelArea.appendChild(checkSpan);
+            labelArea.appendChild(document.createTextNode(` ${cat}`));
 
             item.appendChild(labelArea);
 
             if (isCustom) {
                 const delCatBtn = document.createElement("div");
-                delCatBtn.innerHTML = "×";
+                delCatBtn.textContent = "×";
                 Object.assign(delCatBtn.style, {
                     color: "#ff453a", marginLeft: "10px", padding: "0 4px", fontWeight: "bold", opacity: "0.5"
                 });
@@ -253,7 +198,7 @@ function createTagsWidget(node, name, opts = {}) {
         });
         
         const addCatBtn = document.createElement("button");
-        addCatBtn.innerHTML = "+";
+        addCatBtn.textContent = "+";
         Object.assign(addCatBtn.style, {
             backgroundColor: "#3a3a3c", border: "none", color: "white", borderRadius: "4px",
             padding: "2px 8px", cursor: "pointer", fontSize: "14px"
@@ -278,6 +223,92 @@ function createTagsWidget(node, name, opts = {}) {
         addCatContainer.appendChild(addCatBtn);
         menu.appendChild(addCatContainer);
 
+        // Add Import/Export Buttons
+        const toolDivider = document.createElement("div");
+        Object.assign(toolDivider.style, { height: "1px", backgroundColor: "#3a3a3c", margin: "6px 4px" });
+        menu.appendChild(toolDivider);
+
+        const toolContainer = document.createElement("div");
+        Object.assign(toolContainer.style, { display: "flex", gap: "4px", padding: "4px" });
+
+        const importBtn = document.createElement("button");
+        importBtn.textContent = "📥 Import";
+        const exportBtn = document.createElement("button");
+        exportBtn.textContent = "📤 Export";
+
+        [importBtn, exportBtn].forEach(btn => {
+            Object.assign(btn.style, {
+                backgroundColor: "#3a3a3c", border: "none", color: "white", borderRadius: "4px",
+                padding: "4px 8px", cursor: "pointer", fontSize: "10px", flexGrow: "1"
+            });
+        });
+
+        exportBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            const data = {
+                version: "2.4.0",
+                customCategories: widget.value.customCategories || [],
+                tags: widget.value.tags.filter(t => (widget.value.customCategories || []).includes(t.category))
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `trigger_words_custom_collection.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        importBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".json";
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    try {
+                        const imported = JSON.parse(re.target.result);
+                        const newValue = { ...widget.value };
+                        
+                        // Merge custom categories
+                        if (imported.customCategories) {
+                            imported.customCategories.forEach(cat => {
+                                if (!newValue.customCategories.includes(cat)) {
+                                    newValue.customCategories.push(cat);
+                                }
+                                if (!newValue.activeCategories.includes(cat)) {
+                                    newValue.activeCategories.push(cat);
+                                }
+                            });
+                        }
+                        
+                        // Merge tags
+                        if (imported.tags) {
+                            imported.tags.forEach(tag => {
+                                if (!newValue.tags.find(t => t.text === tag.text && t.category === tag.category)) {
+                                    newValue.tags.push(tag);
+                                }
+                            });
+                        }
+                        
+                        widget.value = newValue;
+                        if (document.body.contains(menu)) document.body.removeChild(menu);
+                    } catch (err) {
+                        alert("Error importing collection: " + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        };
+
+        toolContainer.appendChild(importBtn);
+        toolContainer.appendChild(exportBtn);
+        menu.appendChild(toolContainer);
+
         const closeMenu = (ev) => { if (document.body.contains(menu) && !menu.contains(ev.target)) { document.body.removeChild(menu); window.removeEventListener("click", closeMenu); } };
         setTimeout(() => {
             window.addEventListener("click", closeMenu);
@@ -291,12 +322,22 @@ function createTagsWidget(node, name, opts = {}) {
         node.setDirtyCanvas(true, false); 
     };
     allOffBtn.onclick = () => { 
-        widget.value = { ...widget.value, tags: widget.value.tags.map(t => ({...t, active: false})) }; 
+        // Reset ALL tags to inactive AND strength 1.0
+        widget.value = { ...widget.value, tags: widget.value.tags.map(t => ({...t, active: false, strength: 1.0})) }; 
         node.setDirtyCanvas(true, false); 
+    };
+
+    strModeBtn.onclick = () => {
+        widget.value = { ...widget.value, strengthEnabled: !widget.value.strengthEnabled };
+        node.setDirtyCanvas(true, false);
     };
 
     const renderAll = () => {
         while (contentArea.firstChild) contentArea.removeChild(contentArea.firstChild);
+
+        // Update STR button color - Muted professional greys
+        strModeBtn.style.backgroundColor = widget.value.strengthEnabled ? "#5a5a5e" : "#252527";
+        strModeBtn.style.border = widget.value.strengthEnabled ? "1px solid #30d158" : "none"; // Subtle green border for active
 
         widget.value.activeCategories.forEach(catName => {
             const section = document.createElement("div");
@@ -319,7 +360,7 @@ function createTagsWidget(node, name, opts = {}) {
             });
             
             const addBtn = document.createElement("button");
-            addBtn.innerHTML = "+";
+            addBtn.textContent = "+";
             Object.assign(addBtn.style, {
                 backgroundColor: "#3a3a3c", border: "none", color: "white", borderRadius: "4px",
                 padding: "2px 8px", cursor: "pointer", fontSize: "12px"
@@ -347,8 +388,8 @@ function createTagsWidget(node, name, opts = {}) {
             const grid = document.createElement("div");
             Object.assign(grid.style, { 
                 display: "grid", 
-                gridTemplateColumns: "repeat(auto-fill, minmax(calc(50% - 6px), 1fr))", 
-                gap: "6px", 
+                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", 
+                gap: "8px", 
                 width: "100%" 
             });
 
@@ -356,9 +397,12 @@ function createTagsWidget(node, name, opts = {}) {
             tagsInCat.forEach(tagData => {
                 const item = document.createElement("div");
                 Object.assign(item.style, {
-                    display: "flex", alignItems: "center", gap: "6px", padding: "6px 8px",
-                    backgroundColor: "#2c2c2e", borderRadius: "6px", border: "1px solid #3a3a3c", minWidth: "0", width: "100%", boxSizing: "border-box"
+                    display: "flex", flexDirection: "column", gap: "4px", padding: "6px 8px",
+                    backgroundColor: "#121214", borderRadius: "6px", border: "1px solid #2a2a2c", minWidth: "0", width: "100%", boxSizing: "border-box"
                 });
+
+                const topRow = document.createElement("div");
+                Object.assign(topRow.style, { display: "flex", alignItems: "center", gap: "6px", width: "100%" });
 
                 const toggle = document.createElement("div");
                 Object.assign(toggle.style, {
@@ -376,7 +420,14 @@ function createTagsWidget(node, name, opts = {}) {
 
                 const handleToggle = (e) => { 
                     e.stopPropagation(); 
-                    widget.value = { ...widget.value, tags: widget.value.tags.map(t => t === tagData ? {...t, active: !t.active} : t) };
+                    widget.value = { ...widget.value, tags: widget.value.tags.map(t => {
+                        if (t === tagData) {
+                            const newActive = !t.active;
+                            // Reset strength to 1.0 when turning OFF
+                            return { ...t, active: newActive, strength: newActive ? t.strength : 1.0 };
+                        }
+                        return t;
+                    }) };
                     node.setDirtyCanvas(true, false); 
                 };
                 toggle.onclick = handleToggle;
@@ -402,7 +453,7 @@ function createTagsWidget(node, name, opts = {}) {
                 };
 
                 const delBtn = document.createElement("div");
-                delBtn.innerHTML = "×";
+                delBtn.textContent = "×";
                 Object.assign(delBtn.style, { color: "#ff453a", cursor: "pointer", padding: "0 4px", fontSize: "14px", fontWeight: "bold", opacity: "0.4" });
                 delBtn.onmouseover = () => delBtn.style.opacity = "1";
                 delBtn.onmouseout = () => delBtn.style.opacity = "0.4";
@@ -411,17 +462,96 @@ function createTagsWidget(node, name, opts = {}) {
                     widget.value = { ...widget.value, tags: widget.value.tags.filter(t => t !== tagData) };
                 };
 
-                item.appendChild(toggle);
-                item.appendChild(label);
-                item.appendChild(delBtn);
+                topRow.appendChild(toggle);
+                topRow.appendChild(label);
+                topRow.appendChild(delBtn);
+                item.appendChild(topRow);
+
+                if (widget.value.strengthEnabled) {
+                    const sliderRow = document.createElement("div");
+                    Object.assign(sliderRow.style, { display: "flex", alignItems: "center", gap: "6px", width: "100%" });
+                    
+                    const slider = document.createElement("input");
+                    slider.type = "range";
+                    slider.min = "0";
+                    slider.max = "2";
+                    slider.step = "0.05";
+                    slider.value = tagData.strength || 1.0;
+                    Object.assign(slider.style, { flexGrow: "1", height: "4px", cursor: "pointer", accentColor: "#5a5a5e" });
+                    
+                    const valLabel = document.createElement("span");
+                    valLabel.textContent = parseFloat(slider.value).toFixed(2);
+                    Object.assign(valLabel.style, { fontSize: "9px", opacity: "0.6", minWidth: "25px", textAlign: "right", cursor: "pointer" });
+                    
+                    valLabel.onclick = (e) => {
+                        e.stopPropagation();
+                        const input = document.createElement("input");
+                        input.type = "number";
+                        input.value = tagData.strength || 1.0;
+                        input.step = "0.01";
+                        input.min = "0";
+                        input.max = "2";
+                        Object.assign(input.style, {
+                            width: "35px", fontSize: "9px", backgroundColor: "#1c1c1e", color: "white", border: "none", outline: "none", textAlign: "right"
+                        });
+                        
+                        const saveValue = () => {
+                            let val = parseFloat(input.value);
+                            if (isNaN(val)) val = 1.0;
+                            val = Math.max(0, Math.min(2, val));
+                            tagData.strength = val;
+                            slider.value = val;
+                            widget.value = { ...widget.value }; // Sync
+                        };
+                        
+                        input.onblur = saveValue;
+                        input.onkeydown = (ev) => { if (ev.key === "Enter") saveValue(); };
+                        
+                        valLabel.textContent = "";
+                        valLabel.appendChild(input);
+                        input.focus();
+                        input.select();
+                    };
+
+                    slider.oninput = (e) => {
+                        const val = parseFloat(e.target.value);
+                        valLabel.textContent = val.toFixed(2);
+                        // Update value silently to prevent full re-render on every slider move
+                        tagData.strength = val;
+                        // Mark modified for serialization
+                        const modWidget = node.widgets.find(w => w.name === "modify_tags");
+                        if (modWidget) {
+                            modWidget.value = JSON.stringify(widget.value);
+                        }
+                    };
+                    
+                    slider.onchange = () => {
+                        widget.value = { ...widget.value }; // Trigger full update/sync on release
+                    };
+
+                    sliderRow.appendChild(slider);
+                    sliderRow.appendChild(valLabel);
+                    item.appendChild(sliderRow);
+                }
+
                 grid.appendChild(item);
 
                 item.addEventListener("wheel", (e) => {
-                    e.preventDefault(); e.stopPropagation();
-                    const sens = getWheelSensitivity();
-                    widget.value = { ...widget.value, tags: widget.value.tags.map(t => t === tagData ? {...t, strength: Math.max(0, Math.min(2, (t.strength || 1) + (e.deltaY < 0 ? sens : -sens)))} : t) };
-                    node.setDirtyCanvas(true, false);
-                });
+                    // Check if strength mode is ON
+                    if (widget.value.strengthEnabled) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const sens = getWheelSensitivity();
+                        const delta = e.deltaY < 0 ? sens : -sens;
+                        const newStrength = Math.max(0, Math.min(2, (tagData.strength || 1.0) + delta));
+                        
+                        widget.value = { 
+                            ...widget.value, 
+                            tags: widget.value.tags.map(t => t === tagData ? {...t, strength: newStrength} : t) 
+                        };
+                        node.setDirtyCanvas(true, false);
+                    }
+                }, { passive: false });
             });
 
             section.appendChild(grid);
@@ -442,10 +572,27 @@ app.registerExtension({
     name: "StandardTriggerWordsLoader",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         if (nodeData.name === "StandardTriggerWordsLoader") {
+            // SSoT Bootstrap: Extract presets library from the Python definition
+            let bootstrapPresets = {};
+            try {
+                // ComfyUI stores default values for hidden inputs here
+                const allPresetsDef = nodeData?.input?.hidden?.all_presets;
+                if (allPresetsDef && allPresetsDef[1] && allPresetsDef[1].default) {
+                    bootstrapPresets = JSON.parse(allPresetsDef[1].default);
+                }
+            } catch (e) {
+                console.error("StandardTriggerWords: Failed to parse bootstrap presets from nodeData", e);
+            }
+
             const onNodeCreated = nodeType.prototype.onNodeCreated;
             nodeType.prototype.onNodeCreated = function() {
                 const r = onNodeCreated?.apply(this, arguments);
                 const node = this;
+
+                // Priority 1: Use the bootstrapped presets from registration
+                if (Object.keys(bootstrapPresets).length > 0) {
+                    TRIGGER_WORD_PRESETS = bootstrapPresets;
+                }
 
                 let modifyTagsWidget = node.widgets.find(w => w.name === "modify_tags");
                 if (!modifyTagsWidget) {
@@ -457,7 +604,7 @@ app.registerExtension({
 
                 const tagsWidget = createTagsWidget(node, "trigger_words_display", { defaultVal: [] });
 
-                const toHide = ["preset_category", "allow_strength_adjustment", "modify_tags"];
+                const toHide = ["preset_category", "allow_strength_adjustment", "modify_tags", "all_presets"];
                 const applyHiding = () => {
                     node.widgets.forEach(w => {
                         if (toHide.includes(w.name)) {
@@ -479,12 +626,43 @@ app.registerExtension({
                 setTimeout(applyHiding, 100);
                 setTimeout(applyHiding, 500);
 
-                let lastKnownValue = modifyTagsWidget.value;
+                // Fetch presets from Python via the hidden widget OR a custom API
+                const fetchPresets = () => {
+                    // Method 1: Check the hidden 'all_presets' widget (Bootstrap)
+                    const allPresetsWidget = node.widgets.find(w => w.name === "all_presets");
+                    if (allPresetsWidget && allPresetsWidget.value) {
+                        try {
+                            const parsed = JSON.parse(allPresetsWidget.value);
+                            if (Object.keys(parsed).length > 0) {
+                                TRIGGER_WORD_PRESETS = parsed;
+                            }
+                        } catch (e) {
+                            console.error("StandardTriggerWords: Error parsing bootstrap presets", e);
+                        }
+                    }
+
+                    // Method 2: Use the bootstrapPresets from closure if available
+                    if (Object.keys(bootstrapPresets).length > 0 && Object.keys(TRIGGER_WORD_PRESETS).length === 0) {
+                        TRIGGER_WORD_PRESETS = bootstrapPresets;
+                    }
+
+                    // Method 3: Listen for UI messages from the backend (Live updates)
+                    this.onUserMessage = (msg) => {
+                        if (msg && msg.presets) {
+                            TRIGGER_WORD_PRESETS = msg.presets;
+                            // Also update the hidden widget for persistence
+                            if (allPresetsWidget) allPresetsWidget.value = JSON.stringify(msg.presets);
+                            renderAll();
+                        }
+                    };
+                };
+                fetchPresets();
+
                 const updateFromHidden = () => {
-                    if (modifyTagsWidget.value && modifyTagsWidget.value !== lastKnownValue) {
+                    if (modifyTagsWidget._setting_internally) return;
+                    if (modifyTagsWidget.value) {
                         try {
                             const data = JSON.parse(modifyTagsWidget.value);
-                            lastKnownValue = modifyTagsWidget.value;
                             tagsWidget.value = data;
                         } catch (e) {
                             console.error("StandardTriggerWords: Sync error", e);
@@ -492,11 +670,13 @@ app.registerExtension({
                     }
                 };
 
-                const syncTimer = setInterval(() => {
-                    if (!node.graph) { clearInterval(syncTimer); return; }
+                // Event-driven sync: Listen for changes on the hidden widget
+                modifyTagsWidget.callback = () => {
                     updateFromHidden();
-                }, 500);
+                };
 
+                // Robust initial load
+                fetchPresets(); // Ensure we have presets before loading state
                 if (modifyTagsWidget.value) {
                     updateFromHidden();
                 } else {
@@ -516,6 +696,17 @@ app.registerExtension({
 
                 node.setSize([750, 700]);
                 return r;
+            };
+
+            // Hook into ComfyUI's configuration system
+            nodeType.prototype.onConfigure = function() {
+                const modifyTagsWidget = this.widgets.find(w => w.name === "modify_tags");
+                const tagsWidget = this.widgets.find(w => w.name === "trigger_words_display");
+                if (modifyTagsWidget?.value && tagsWidget) {
+                    try {
+                        tagsWidget.value = JSON.parse(modifyTagsWidget.value);
+                    } catch (e) {}
+                }
             };
         }
     }

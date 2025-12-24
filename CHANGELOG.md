@@ -1,5 +1,31 @@
 # Standard Trigger Words Loader - Change Log
 
+## [2.4.0] - 2025-12-24
+
+### Added
+- **Single Source of Truth (SSoT)**: Presets are now managed entirely in Python, eliminating duplication.
+- **Import/Export Collections**: Users can now share or backup custom categories via portable JSON files.
+- **Precision Strength Mode**: New "STR" master toggle with inline sliders (0.0 to 2.0).
+- **Inline Numeric Entry**: Click any strength value to type a precise number manually.
+- **Auto-Reset Logic**: Deactivating a tag or using the master "OFF" button now resets weights to 1.0 automatically.
+
+### Changed
+- **Visual Overhaul**: Muted the UI palette to professional greys with a subtle active border.
+- **Event-Driven Synchronization**: Replaced polling timers with a high-performance observer pattern for zero-latency UI.
+- **Responsive Grid**: Layout now dynamically adapts to any node window size.
+
+## [2.3.0] - 2025-12-24
+
+### Changed
+- **Event-Driven Synchronization**: Replaced the 500ms polling timer with a clean, event-based observer pattern. This eliminates "snap-back" UI bugs and reduces CPU overhead.
+- **Robust State Restoration**: Improved workflow loading reliability using the `onConfigure` hook and direct widget callbacks.
+
+## [2.2.0] - 2025-12-24
+
+### Transition
+- **Version 2.2 Baseline**: Cloned from v2.1.0 to begin work on new features and bug fixes.
+- **SDD Integration**: Linked to `.ai_engineer/specs/standard_trigger_words_v2_2.md`.
+
 ## [2.1.0] - 2025-12-22
 
 ### Added

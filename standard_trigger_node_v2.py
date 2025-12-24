@@ -6,7 +6,7 @@ Clickable button tags interface for trigger word management.
 import json
 import logging
 import re
-from .standard_trigger_presets import get_preset_tags, get_category_names
+from .standard_trigger_presets import get_preset_tags, get_category_names, ALL_CATEGORIES
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +54,7 @@ class StandardTriggerWordsLoader:
                 "prompt": "PROMPT",
                 "extra_pnginfo": "EXTRA_PNGINFO",
                 "modify_tags": "STRING",  # Hidden widget to store tag states
+                "all_presets": ("STRING", {"default": json.dumps(ALL_CATEGORIES)}),  # Bootstraps presets to JS
             },
         }
 
@@ -96,16 +97,22 @@ class StandardTriggerWordsLoader:
 
             # Load the tags
             tags_list = []
+            json_strength_enabled = None
             if modify_tags and isinstance(modify_tags, str) and '"text":' in modify_tags:
                 try:
                     data = json.loads(modify_tags)
                     # Support both simple list and nested state object
-                    if isinstance(data, dict) and "tags" in data:
-                        tags_list = data["tags"]
+                    if isinstance(data, dict):
+                        tags_list = data.get("tags", [])
+                        json_strength_enabled = data.get("strengthEnabled")
                     elif isinstance(data, list):
                         tags_list = data
-                except:
+                except (json.JSONDecodeError, TypeError, ValueError):
                     tags_list = []
+            
+            # Use STR button state from UI if present, otherwise fallback to widget
+            if json_strength_enabled is not None:
+                allow_strength_adjustment = json_strength_enabled
             
             # Fallback to presets if no valid custom data found
             if not tags_list:
@@ -121,7 +128,7 @@ class StandardTriggerWordsLoader:
                     
                     try:
                         strength = float(tag.get("strength", 1.0))
-                    except:
+                    except (TypeError, ValueError):
                         strength = 1.0
                     
                     if allow_strength_adjustment and abs(strength - 1.0) > 0.001:
@@ -152,7 +159,10 @@ class StandardTriggerWordsLoader:
                 output = re.sub(r',\s*,', ',', output).strip()
                 output = output.strip(',')
 
-            return (output,)
+            # For V2.4: Ensure presets are sent to frontend
+            # In ComfyUI, the return can include a 'ui' dictionary for custom responses
+            # But the most reliable way for custom widgets is to check the all_presets widget value in JS
+            return {"ui": {"presets": ALL_CATEGORIES}, "result": (output,)}
             
         except Exception as e:
             logger.error(f"Error in process_tags: {str(e)}")
@@ -165,5 +175,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "StandardTriggerWordsLoader": "Standard Trigger Words 📝"
+    "StandardTriggerWordsLoader": "Standard Trigger Words v2.4 📝"
 }
