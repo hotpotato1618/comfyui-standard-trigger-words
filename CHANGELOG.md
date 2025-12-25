@@ -1,5 +1,8 @@
 # Standard Trigger Words Loader - Change Log
 
+## [2.4.4] - 2025-12-25
+- ** Add collapsible categories and drag-and-drop reordering
+
 ## [2.4.3] - 2025-12-24
 
 ### Fixed
