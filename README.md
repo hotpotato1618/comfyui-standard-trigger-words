@@ -25,6 +25,7 @@ An interactive, professional-grade trigger word management node for ComfyUI. Opt
     - **Dynamic Category Management**: Create, rename, and delete custom categories directly within the UI.
     - **Automatic Color Coding**: Categories starting with "Pos:" or "Neg:" automatically inherit Green/Red visual styles.
     - **Batch Operations**: Quick master **ON** and **OFF** buttons for rapid experimentation.
+    - **Collapsible categories and drag-and-drop reordering
 - **Curated Preset Library**:
     - **120+ Curated Tags**: Pre-loaded with high-quality trigger words for modern image generation.
     - **13+ Default Categories**: Quality, Lighting, Composition, Poses, Expressions, Style, Detail, Aesthetic, Motion, and specialized Negative (Anatomy, Technical, etc.) groups.
